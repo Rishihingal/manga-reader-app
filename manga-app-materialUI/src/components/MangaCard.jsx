@@ -4,10 +4,13 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { setMangaItem } from '../feature/mangadex/mangaSlice';
 
 
 function MangaCard({coverArtId, Title, description, mangaId}) {
  const [imageUrl, setImageUrl] = useState('')
+ const dispatch = useDispatch()
 
   const getCoverimage = async () => {
     const coverImage = await fetch(`https://api.mangadex.org/cover/${coverArtId}`).then(response => response.json()).then(data => {
@@ -21,21 +24,32 @@ function MangaCard({coverArtId, Title, description, mangaId}) {
   }
   getCoverimage();
 
+ var mangaItem = {
+    coverImage: imageUrl,
+    title: Title,
+    description: description
+  }
+
+  const handleSelectManga = (mangaItem) => {
+    dispatch(setMangaItem(mangaItem));
+};
+
   return (
 <Card sx={{ maxWidth: 345 }}>
-  <CardActionArea onClick={()=>console.log(description.length)}>
+  <CardActionArea onClick={() => handleSelectManga(mangaItem)}>
       <CardMedia
         component="img"
-        alt="green iguana"
+        alt={`${Title} cover art`}
         height={512}
+        width={241}
         image={imageUrl}
       />
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          {Title.length > 20 ? Title.substring(0, 17) + '...' : Title}
+        <Typography gutterBottom variant="h6" component="div">
+          {Title}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {description.length > 381 ? description.substring(0, 378) + '...' : description}
+        <Typography variant="body2" color="text.secondary" noWrap>
+          {description}
         </Typography>
     </CardContent>
   </CardActionArea>
